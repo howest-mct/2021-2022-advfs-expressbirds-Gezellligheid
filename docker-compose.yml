@@ -14,3 +14,15 @@ services:
     restart: always
     ports:
       - 9999:8080
+  api:
+    image: eliasdebaveye/01_expressbirds
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    env_file:
+      - docker.ormconfig.env
+    environment:
+      NODE_ENV: Production
+    
