@@ -1,43 +1,50 @@
 // app.ts
-import express, { Request, Response } from "express";
+import express, { Request, Response, Router } from "express";
 import "reflect-metadata";
 import { plainToClass } from "class-transformer";
 import { middelwareDemo } from "./middleware/demo";
 import { Bird } from "./entities/Bird";
+import BirdController from "./controllers/bird.controller";
+import seedDatabase from "./seeders/seeder";
 
-// Loading bird data
-import birds from "./birds.json";
-const allBirds = plainToClass(Bird, birds);
+import {
+  Connection,
+  ConnectionOptions,
+  createConnection,
+  getConnectionOptions,
+} from "typeorm";
+import { createDatabase } from "typeorm-extension";
+
+// Await is now possible
+(async () => {
+  const connectionOptions: ConnectionOptions = await getConnectionOptions(); // This line will get the connection options from the typeorm
+  // Connecting database
+  createDatabase({ ifNotExist: true }, connectionOptions)
+    .then(() => {
+      console.log("Database created");
+    })
+    .then(createConnection)
+    .then(async (connection: Connection) => {
+      // Seed database
+      await seedDatabase(connection);
+
+      const app = express(),
+        port = process.env.PORT || 3000;
+
+      // MIDDLEWARE
+      app.use(express.json()); // for parsing application/json
+
+      // CONTROLLERS
+      app.use("/bird", new BirdController().router);
+
+      // APP START
+      app.listen(port, () => {
+        console.info(`\nServer 👾 \nListening on http://localhost:${port}/`);
+      });
+    })
+    .catch((error) => {
+      console.log(`An error occured: ${error}`);
+    });
+})();
 
 // APP SETUP
-const app = express(),
-  port = process.env.PORT || 3000;
-
-// MIDDLEWARE
-app.use(express.json()); // for parsing application/json
-// app.use(middelwareDemo);
-
-// ROUTES
-
-// const bird = new Bird();
-// bird.name = "Marco";
-// bird.sayHello();
-
-// Delivering bird data to the main route
-app.get("/birds", (request: Request, response: Response) => {
-  response.json({ data: birds });
-});
-
-// Get a bird by ID
-app.get("/bird/:id", (request: Request, response: Response) => {
-  const id: string = request.params.id;
-  response.json({
-    data: allBirds.filter((item, index) => {
-      return item.id == id;
-    }),
-  });
-});
-
-// APP START
-app.listen(port);
-console.info(`\nServer 👾 \nListening on http://localhost:${port}/`);

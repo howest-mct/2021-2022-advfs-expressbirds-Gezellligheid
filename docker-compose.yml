@@ -1,0 +1,16 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  db:
+    image: mariadb:10.5.12
+    restart: always
+    ports: 
+      - 3306:3306
+    env_file:
+      - .env
+    volumes:
+      - ./db:/var/lib/mysql
+  adminer:
+    image: adminer:4.8.1
+    restart: always
+    ports:
+      - 9999:8080
