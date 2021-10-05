@@ -6,7 +6,7 @@ import { middelwareDemo } from "./middleware/demo";
 import { Bird } from "./entities/Bird";
 import BirdController from "./controllers/bird.controller";
 import seedDatabase from "./seeders/seeder";
-
+import cors from "cors";
 import {
   Connection,
   ConnectionOptions,
@@ -30,8 +30,8 @@ import { createDatabase } from "typeorm-extension";
 
       const app = express(),
         port = process.env.PORT || 3000;
-
       // MIDDLEWARE
+      app.use(cors());
       app.use(express.json()); // for parsing application/json
 
       // CONTROLLERS

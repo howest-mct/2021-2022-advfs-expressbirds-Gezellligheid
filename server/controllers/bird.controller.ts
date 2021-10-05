@@ -18,13 +18,13 @@ export default class BirdController {
   findBird = async (req: Request, res: Response, next: NextFunction) => {
     const id: string = req.params.id;
     const bird = await this.repository.findOne({ id: id });
-    res.send(bird);
+    res.send({ data: bird });
   };
 
   all = async (req: Request, res: Response, next: NextFunction) => {
     const birds = await this.repository.find();
 
-    res.send(birds);
+    res.send({ data: birds });
   };
 
   // add = (req: Request, res: Response, next: NextFunction) => {
