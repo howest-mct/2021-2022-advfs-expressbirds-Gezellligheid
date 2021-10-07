@@ -14,6 +14,7 @@ import {
   getConnectionOptions,
 } from "typeorm";
 import { createDatabase } from "typeorm-extension";
+import UserController from "./controllers/user.controller";
 
 // Await is now possible
 (async () => {
@@ -36,6 +37,7 @@ import { createDatabase } from "typeorm-extension";
 
       // CONTROLLERS
       app.use("/bird", new BirdController().router);
+      app.use("/user", new UserController().router);
 
       // APP START
       app.listen(port, () => {
